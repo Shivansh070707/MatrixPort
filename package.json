@@ -9,7 +9,20 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+     "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.11.16",
+    "@walletconnect/web3-provider": "^1.8.0",
+    "@web3-react/walletlink-connector": "^6.2.14",
+    "bootstrap": "^5.2.3",
+    "dotenv": "^16.0.3",
+    "ethers": "5.0",
+    "react-bootstrap": "^2.7.2",
+    "react-toastify": "^9.1.2",
+    "walletlink": "^2.5.0",
+    "web3modal": "^1.9.12"
   },
   "scripts": {
     "start": "react-scripts start",
