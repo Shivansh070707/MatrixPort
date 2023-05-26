@@ -7,6 +7,7 @@ body {
 /* Container */
 .container {
   max-width: 800px;
+  width: auto;
   margin: 0 auto;
   padding: 20px;
   background-color: white;
@@ -47,6 +48,7 @@ form p {
 
 .form-group {
   margin-bottom: 20px;
+  max-width: 800 px;
 }
 
 .form-group:last-child {
@@ -99,6 +101,9 @@ table td {
   padding: 10px;
   text-align: left;
   border: 1px solid #ccc;
+}
+.form-control {
+  width: 800 px;
 }
 
 table th {

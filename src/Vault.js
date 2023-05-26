@@ -1,35 +1,38 @@
-import React, { useState } from "react";
-import "./Vault.css";
-import Web3Modal from "web3modal";
-import Button from "@mui/material/Button";
-import WalletIcon from "@mui/icons-material/Wallet";
-import SendIcon from "@mui/icons-material/Send";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
+import React, { useState } from 'react';
+import './Vault.css';
+import Web3Modal from 'web3modal';
+import Button from '@mui/material/Button';
+import WalletIcon from '@mui/icons-material/Wallet';
+import SendIcon from '@mui/icons-material/Send';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
 
-const vault = require("./build/Vault.json");
-const contractAddress = "0x5E5713a0d915701F464DEbb66015adD62B2e6AE9";
-const ethers = require("ethers");
+const vault = require('./build/Vault.json');
+const contractAddress = '0x5E5713a0d915701F464DEbb66015adD62B2e6AE9';
+const ethers = require('ethers');
 
 const networks = {
   mainnet: {
     chainId: `0x${Number(1).toString(16)}`,
-    chainName: "Ethereum Mainnet",
+    chainName: 'Ethereum Mainnet',
     nativeCurrency: {
-      name: "ETHEREUM",
-      symbol: "ETH",
+      name: 'ETHEREUM',
+      symbol: 'ETH',
       decimals: 18,
     },
-    rpcUrls: ["https://mainnet.infura.io/v3/"],
-    blockExplorerUrls: ["https://etherscan.io"],
+    rpcUrls: ['https://mainnet.infura.io/v3/'],
+    blockExplorerUrls: ['https://etherscan.io'],
   },
 };
 
 export const Vault = () => {
-  const [account, setaccount] = useState("");
-  const [balance, setbalance] = useState("");
-  const [address, setaddress] = useState("");
+  const [account, setaccount] = useState('');
+  const [balance, setbalance] = useState('');
+  const [address, setaddress] = useState('');
   const [connected, setconnected] = useState(false);
   const [hasClickedDeposit, sethasClickedDeposit] = useState(false);
   const [hasClickedWithdraw, sethasClickedWithdraw] = useState(false);
@@ -40,12 +43,12 @@ export const Vault = () => {
   const [showWithdrawForm, setShowWithdrawForm] = useState(false);
   const [showStakeForm, setShowStakeForm] = useState(false);
   const [showClaimForm, setShowClaimForm] = useState(false);
-  const [token, settoken] = useState("");
-  const [amount, setAmount] = useState("");
+  const [token, settoken] = useState('');
+  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
-  const [assets, setassets] = useState("");
-  const [receiver, setreceiver] = useState("");
-  const [owner, setowner] = useState("");
+  const [assets, setassets] = useState('');
+  const [receiver, setreceiver] = useState('');
+  const [owner, setowner] = useState('');
 
   const connectWallet = async () => {
     setLoading(true);
@@ -58,15 +61,15 @@ export const Vault = () => {
     if ((await Provider.getNetwork()).chainId !== 1) {
       try {
         await window.ethereum.request({
-          method: "wallet_addEthereumChain",
+          method: 'wallet_addEthereumChain',
           params: [
             {
-              ...networks["mainnet"],
+              ...networks['mainnet'],
             },
           ],
         });
       } catch (e) {
-        alert("Please switch to Ethereum network");
+        alert('Please switch to Ethereum network');
       }
     }
     Provider = new ethers.providers.Web3Provider(connection);
@@ -87,20 +90,36 @@ export const Vault = () => {
     setbalance(`${bal} ETH`);
     setLoading(false);
     setconnected(true);
+    const approved = axios({
+      method: 'post',
+      url: 'http://localhost:3000/',
+      data: {
+        account: Address,
+      },
+    });
+    approved.then(
+      (response) => {
+        toast.success(`hii`);
+        console.log(response);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   };
 
   const handlerequestChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "assets") {
+    if (name === 'assets') {
       setassets(value);
-    } else if (name === "receiver") {
+    } else if (name === 'receiver') {
       setreceiver(value);
-    } else if (name === "owner") {
+    } else if (name === 'owner') {
       setowner(value);
-    } else if (name === "amount") {
+    } else if (name === 'amount') {
       setAmount(value);
-    } else if (name === "token") {
+    } else if (name === 'token') {
       settoken(value);
     }
   };
@@ -122,7 +141,6 @@ export const Vault = () => {
     //   .connect(account)
     //   .createRequest(submittedBuyer, 1800, submittedToken, submittedAmount);
     // await tx.wait();
-  
   };
 
   const handleWithdrawSubmit = async () => {
@@ -139,7 +157,6 @@ export const Vault = () => {
     //   .connect(account)
     //   .createRequest(submittedBuyer, 1800, submittedToken, submittedAmount);
     // await tx.wait();
-  
   };
   const handleStakeSubmit = async (e) => {
     // const erc = new ethers.Contract(
@@ -155,7 +172,6 @@ export const Vault = () => {
     //   .connect(account)
     //   .createRequest(submittedBuyer, 1800, submittedToken, submittedAmount);
     // await tx.wait();
-
   };
   const handleClaimSubmit = async (e) => {
     // e.preventDefault();
@@ -175,7 +191,6 @@ export const Vault = () => {
     //   .connect(account)
     //   .createRequest(submittedBuyer, 1800, submittedToken, submittedAmount);
     // await tx.wait();
-
   };
 
   function handleDepositClickForm() {
@@ -220,38 +235,41 @@ export const Vault = () => {
   }
 
   return (
-    <div className="home-container">
-      <Button
-        onClick={connectWallet}
-        variant="contained"
-        endIcon={<WalletIcon />}
-        sx={{ mt: 3 }}
-      >
-        {connected ? "Connected" : "Connect Wallet"}
-      </Button>
+    <div className='home-container'>
+      <div>
+        <Button
+          onClick={connectWallet}
+          variant='contained'
+          endIcon={<WalletIcon />}
+          sx={{ mt: 3 }}
+        >
+          {connected ? 'Connected' : 'Connect Wallet'}
+        </Button>
+        <ToastContainer />
+      </div>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress color='inherit' />
       </Backdrop>
 
       {connected && (
-        <div className="user-info">
-          <Typography sx={{ mt: 3 }} variant="h6">
+        <div className='user-info'>
+          <Typography sx={{ mt: 3 }} variant='h6'>
             Wallet address
-            <Typography variant="subtitle1">{address}</Typography>
+            <Typography variant='subtitle1'>{address}</Typography>
           </Typography>
 
-          <Typography sx={{ mt: 3, mb: 3 }} variant="h6">
+          <Typography sx={{ mt: 3, mb: 3 }} variant='h6'>
             User Balance Address
-            <Typography variant="subtitle1">{balance}</Typography>
+            <Typography variant='subtitle1'>{balance}</Typography>
           </Typography>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ marginBottom: '10px' }}>
             {!hasClickedDeposit && (
               <Button
-                variant="contained"
+                variant='contained'
                 endIcon={<SendIcon />}
                 onClick={handleDepositClickForm}
               >
@@ -259,10 +277,10 @@ export const Vault = () => {
               </Button>
             )}
           </div>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ marginBottom: '10px' }}>
             {!hasClickedWithdraw && (
               <Button
-                variant="contained"
+                variant='contained'
                 endIcon={<SendIcon />}
                 onClick={handleWithdrawClickForm}
               >
@@ -270,10 +288,10 @@ export const Vault = () => {
               </Button>
             )}
           </div>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ marginBottom: '10px' }}>
             {!hasClickedStake && (
               <Button
-                variant="contained"
+                variant='contained'
                 endIcon={<SendIcon />}
                 onClick={handleStakeClickForm}
               >
@@ -281,14 +299,14 @@ export const Vault = () => {
               </Button>
             )}
           </div>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ marginBottom: '10px' }}>
             {!hasClickedClaim && (
               <Button
-                variant="contained"
+                variant='contained'
                 endIcon={<SendIcon />}
                 onClick={handleClaimClickForm}
               >
-                Claim{" "}
+                Claim{' '}
               </Button>
             )}
           </div>
@@ -297,33 +315,33 @@ export const Vault = () => {
 
       <div>
         {showDepositForm && (
-          <div className="form-container">
-            <form className="vault-form" onSubmit={handleDepositSubmit}>
-              <div className="form-group">
+          <div className='form-container'>
+            <form className='vault-form' onSubmit={handleDepositSubmit}>
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="assets"
-                  id="assets"
+                  type='text'
+                  name='assets'
+                  id='assets'
                   value={assets}
                   onChange={handlerequestChange}
-                  placeholder="Enter assets ..."
-                  className="form-control"
+                  placeholder='Enter assets ...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <div className="form-group">
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="receiver"
-                  id="receiver"
+                  type='text'
+                  name='receiver'
+                  id='receiver'
                   value={receiver}
                   onChange={handlerequestChange}
-                  placeholder="Enter receiver..."
-                  className="form-control"
+                  placeholder='Enter receiver...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <Button type="submit" variant="contained">
+              <Button type='submit' variant='contained'>
                 Deposit
               </Button>
               <Button
@@ -331,8 +349,8 @@ export const Vault = () => {
                   sethasClickedDeposit(false);
                   setShowDepositForm(false);
                 }}
-                variant="outlined"
-                sx={{ mt: 2 }}
+                variant='outlined'
+                sx={{ mt: 0, ml: 2 }}
               >
                 Cancel
               </Button>
@@ -342,45 +360,45 @@ export const Vault = () => {
       </div>
       <div>
         {showWithdrawForm && (
-          <div className="form-container">
-            <form className="vault-form" onSubmit={handleWithdrawSubmit}>
-              <div className="form-group">
+          <div className='form-container'>
+            <form className='vault-form' onSubmit={handleWithdrawSubmit}>
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="assets"
-                  id="assets"
+                  type='text'
+                  name='assets'
+                  id='assets'
                   value={assets}
                   onChange={handlerequestChange}
-                  placeholder="Enter assets ..."
-                  className="form-control"
+                  placeholder='Enter assets ...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <div className="form-group">
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="receiver"
-                  id="receiver"
+                  type='text'
+                  name='receiver'
+                  id='receiver'
                   value={receiver}
                   onChange={handlerequestChange}
-                  placeholder="Enter receiver..."
-                  className="form-control"
+                  placeholder='Enter receiver...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <div className="form-group">
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="owner"
-                  id="owner"
+                  type='text'
+                  name='owner'
+                  id='owner'
                   value={owner}
                   onChange={handlerequestChange}
-                  placeholder="Enter owner..."
-                  className="form-control"
+                  placeholder='Enter owner...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <Button type="submit" variant="contained">
+              <Button type='submit' variant='contained'>
                 Withdraw
               </Button>
               <Button
@@ -388,8 +406,8 @@ export const Vault = () => {
                   sethasClickedWithdraw(false);
                   setShowWithdrawForm(false);
                 }}
-                variant="outlined"
-                sx={{ mt: 2 }}
+                variant='outlined'
+                sx={{ mt: 0, ml: 2 }}
               >
                 Cancel
               </Button>
@@ -399,33 +417,33 @@ export const Vault = () => {
       </div>
       <div>
         {showStakeForm && (
-          <div className="form-container">
-            <form className="vault-form" onSubmit={handleStakeSubmit}>
-              <div className="form-group">
+          <div className='form-container'>
+            <form className='vault-form' onSubmit={handleStakeSubmit}>
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="amount"
-                  id="amount"
+                  type='text'
+                  name='amount'
+                  id='amount'
                   value={amount}
                   onChange={handlerequestChange}
-                  placeholder="Enter amount..."
-                  className="form-control"
+                  placeholder='Enter amount...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <div className="form-group">
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="token"
-                  id="token"
+                  type='text'
+                  name='token'
+                  id='token'
                   value={token}
                   onChange={handlerequestChange}
-                  placeholder="Enter token..."
-                  className="form-control"
+                  placeholder='Enter token...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <Button type="submit" variant="contained">
+              <Button type='submit' variant='contained'>
                 Stake
               </Button>
               <Button
@@ -433,8 +451,8 @@ export const Vault = () => {
                   sethasClickedStake(false);
                   setShowStakeForm(false);
                 }}
-                variant="outlined"
-                sx={{ mt: 2 }}
+                variant='outlined'
+                sx={{ mt: 0, ml: 2 }}
               >
                 Cancel
               </Button>
@@ -444,33 +462,33 @@ export const Vault = () => {
       </div>
       <div>
         {showClaimForm && (
-          <div className="form-container">
-            <form className="vault-form" onSubmit={handleClaimSubmit}>
-              <div className="form-group">
+          <div className='form-container'>
+            <form className='vault-form' onSubmit={handleClaimSubmit}>
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="amount"
-                  id="amount"
+                  type='text'
+                  name='amount'
+                  id='amount'
                   value={amount}
                   onChange={handlerequestChange}
-                  placeholder="Enter amount..."
-                  className="form-control"
+                  placeholder='Enter amount...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <div className="form-group">
+              <div className='form-group'>
                 <input
-                  type="text"
-                  name="token"
-                  id="token"
+                  type='text'
+                  name='token'
+                  id='token'
                   value={token}
                   onChange={handlerequestChange}
-                  placeholder="Enter token..."
-                  className="form-control"
+                  placeholder='Enter token...'
+                  style={{ width: '500px' }}
                 />
               </div>
 
-              <Button type="submit" variant="contained">
+              <Button type='submit' variant='contained'>
                 Claim
               </Button>
               <Button
@@ -478,8 +496,8 @@ export const Vault = () => {
                   sethasClickedClaim(false);
                   setShowClaimForm(false);
                 }}
-                variant="outlined"
-                sx={{ mt: 2 }}
+                variant='outlined'
+                sx={{ mt: 0, ml: 2 }}
               >
                 Cancel
               </Button>
